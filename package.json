@@ -36,7 +36,7 @@
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
     "fastify-type-provider-zod": "^6.1.0",
-    "ioredis": "^5.9.3",
+    "ioredis": "^6.0.0",
     "lru-cache": "^11.0.2",
     "pino": "^9.6.0",
     "piscina": "^5.1.4",
