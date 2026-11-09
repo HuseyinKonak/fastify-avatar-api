@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.env
+.git
+.gitignore
+*.md
+.github
+.npm-cache
+.tooling
+artifacts
+tests
+coverage
+dist

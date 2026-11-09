@@ -1,0 +1,46 @@
+services:
+  avatar-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: avatar-service
+    expose:
+      - "8083"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      PORT: 8083
+      HOST: 0.0.0.0
+      SERVICE_NAME: avatar
+      TRUST_PROXY: "true"
+      CORS_ORIGINS: "${CORS_ORIGINS:-}"
+      REDIS_URL: redis://redis:6379
+      NODE_ENV: production
+      RATE_LIMIT_MAX: 100
+      RATE_LIMIT_WINDOW_MS: 60000
+      CACHE_TTL_MS: 3600000
+      CACHE_MAX_ITEMS: 500
+      CACHE_MAX_SIZE_MB: 50
+      MAX_WIDTH: 2048
+      MAX_HEIGHT: 2048
+      SHARP_CONCURRENCY: 1
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.avatar.rule=Host(`localhost`) && PathPrefix(`/api/avatar`)
+      - traefik.http.routers.avatar.entrypoints=websecure
+      - traefik.http.routers.avatar.priority=100
+      - traefik.http.routers.avatar.tls=true
+      - traefik.http.routers.avatar.middlewares=avatar-strip-prefix@docker,api-rate-limit@docker
+      - traefik.http.services.avatar.loadbalancer.server.port=8083
+      - traefik.http.middlewares.avatar-strip-prefix.stripprefix.prefixes=/api/avatar
+      - traefik.http.middlewares.api-rate-limit.rateLimit.average=60
+      - traefik.http.middlewares.api-rate-limit.rateLimit.burst=30
+    networks:
+      - gateway
+
+networks:
+  gateway:
+    name: avatar_gateway
+    external: true
